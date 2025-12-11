@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Sistema Elektra{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card bg-gradient-primary text-white">
+            <div class="card-body p-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4 fw-bold mb-3">
+                            <i class="bi bi-shop-window me-3"></i>Sistema de Gestión Elektra
+                        </h1>
+                        <p class="lead mb-4">
+                            Sistema completo para gestión de inventarios, ventas, clientes y proveedores 
+                            con control de imágenes grandes para mejor visualización.
+                        </p>
+                        <div class="d-flex gap-3">
+                            <a href="{% url 'productos_agregar' %}" class="btn btn-light btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Agregar Producto
+                            </a>
+                            <a href="{% url 'ventas_ver' %}" class="btn btn-outline-light btn-lg">
+                                <i class="bi bi-graph-up me-2"></i>Ver Ventas
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <img src="https://via.placeholder.com/300x300/ffffff/4361ee?text=ELEKTRA" 
+                             alt="Logo Elektra"
+                             class="img-fluid rounded-circle shadow-lg"
+                             style="border: 5px solid white;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-5">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-primary">
+                <i class="bi bi-box-seam display-4"></i>
+            </div>
+            <h3 class="mt-3">{{ estadisticas.productos }}</h3>
+            <p class="text-muted mb-0">Productos</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-success">
+                <i class="bi bi-people display-4"></i>
+            </div>
+            <h3 class="mt-3">{{ estadisticas.clientes }}</h3>
+            <p class="text-muted mb-0">Clientes</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-warning">
+                <i class="bi bi-cash-coin display-4"></i>
+            </div>
+            <h3 class="mt-3">{{ estadisticas.ventas }}</h3>
+            <p class="text-muted mb-0">Ventas</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-danger">
+                <i class="bi bi-truck display-4"></i>
+            </div>
+            <h3 class="mt-3">{{ estadisticas.proveedores }}</h3>
+            <p class="text-muted mb-0">Proveedores</p>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-lightning-charge me-2"></i>Acciones Rápidas
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-2">
+                        <a href="{% url 'productos_agregar' %}" class="btn btn-primary w-100 h-100 py-4">
+                            <i class="bi bi-plus-circle display-6 d-block mb-2"></i>
+                            <span>Nuevo Producto</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'clientes_agregar' %}" class="btn btn-success w-100 h-100 py-4">
+                            <i class="bi bi-person-plus display-6 d-block mb-2"></i>
+                            <span>Nuevo Cliente</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'proveedores_agregar' %}" class="btn btn-warning w-100 h-100 py-4">
+                            <i class="bi bi-truck display-6 d-block mb-2"></i>
+                            <span>Nuevo Proveedor</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'vendedores_agregar' %}" class="btn btn-info w-100 h-100 py-4">
+                            <i class="bi bi-person-badge display-6 d-block mb-2"></i>
+                            <span>Nuevo Vendedor</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'ventas_agregar' %}" class="btn btn-danger w-100 h-100 py-4">
+                            <i class="bi bi-cart-plus display-6 d-block mb-2"></i>
+                            <span>Nueva Venta</span>
+                        </a>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{% url 'categorias_agregar' %}" class="btn btn-secondary w-100 h-100 py-4">
+                            <i class="bi bi-tag display-6 d-block mb-2"></i>
+                            <span>Nueva Categoría</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Productos Recientes -->
+{% if productos_recientes %}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Productos Recientes
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for producto in productos_recientes %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            <div class="text-center p-3">
+                                {% if producto.imagen %}
+                                    <img src="{{ producto.imagen.url }}" 
+                                         alt="{{ producto.nombre_producto }}"
+                                         class="img-producto-grande mb-3">
+                                {% else %}
+                                    <img src="/media/productos/default_producto.png" 
+                                         alt="Imagen predeterminada"
+                                         class="img-producto-grande mb-3" style="opacity: 0.6;">
+                                {% endif %}
+                            </div>
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ producto.nombre_producto }}</h5>
+                                <p class="card-text">
+                                    <span class="badge bg-primary">{{ producto.categoria.nombre }}</span>
+                                    <br>
+                                    <strong class="text-success">${{ producto.precio }}</strong>
+                                </p>
+                                <a href="#" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

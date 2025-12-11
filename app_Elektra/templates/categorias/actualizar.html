@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizar Categoría - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Actualizar Categoría: {{ categoria.nombre }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-secondary">
+                                <i class="bi bi-tag-fill me-2"></i>Información de la Categoría
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre" value="{{ categoria.nombre }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre de la categoría.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Color *</label>
+                                    <div class="input-group input-group-lg">
+                                        <input type="color" class="form-control form-control-color" 
+                                               name="color" value="{{ categoria.color }}" 
+                                               style="width: 80px; height: 50px;">
+                                        <input type="text" class="form-control" 
+                                               id="colorText" value="{{ categoria.color }}"
+                                               placeholder="#RRGGBB">
+                                    </div>
+                                    <small class="text-muted">
+                                        Formato HEX: #RRGGBB
+                                    </small>
+                                </div>
+                                
+                                <div class="col-12 mb-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6>Estadísticas de la Categoría:</h6>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h2 class="text-primary">{{ categoria.productos.count }}</h2>
+                                                    <p class="text-muted mb-0">Productos en esta categoría</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="mb-1"><strong>Creada:</strong> {{ categoria.fecha_creacion|date:"d/m/Y" }}</p>
+                                                    <p class="mb-0"><strong>ID:</strong> {{ categoria.id }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Icono GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-image me-2"></i>Icono de la Categoría
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Icono actual GRANDE -->
+                                    <div class="mb-4">
+                                        {% if categoria.icono %}
+                                            <img src="{{ categoria.icono.url }}" 
+                                                 alt="Icono actual"
+                                                 class="img-preview-extra-grande d-block mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px solid {{ categoria.color }};">
+                                            <p class="text-secondary mt-2">
+                                                <i class="bi bi-check-circle"></i> Icono actual
+                                            </p>
+                                        {% else %}
+                                            <div class="img-preview-extra-grande d-flex align-items-center justify-content-center mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px dashed #dee2e6; background-color: {{ categoria.color }}20;">
+                                                <i class="bi bi-tag-fill display-4" style="color: {{ categoria.color }};"></i>
+                                            </div>
+                                            <p class="text-muted mt-2">
+                                                <i class="bi bi-image"></i> Sin icono
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Campo para cambiar icono -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-secondary btn-lg w-100">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Cambiar Icono
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="icono" 
+                                                   name="icono" 
+                                                   accept="image/*">
+                                        </label>
+                                        <small class="text-muted d-block mt-2">
+                                            Deja vacío para mantener el icono actual
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Vista previa del color -->
+                                    <div class="mt-4">
+                                        <div class="card">
+                                            <div class="card-body text-center">
+                                                <h6>Vista previa del color:</h6>
+                                                <div class="mt-2 p-3 rounded" 
+                                                     style="background-color: {{ categoria.color }}; color: white;">
+                                                    <strong>{{ categoria.nombre }}</strong>
+                                                </div>
+                                                <small class="text-muted mt-2 d-block">
+                                                    Este es el color que se mostrará en la categoría
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'categorias_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-save me-2"></i>Actualizar Categoría
+                        </button>
+                    </div>
+                </form>
+            </div>
+</div>
+</div>
+</div>
+
+<script>
+    // Sincronizar selector de color con campo de texto
+    const colorPicker = document.querySelector('input[name="color"]');
+    const colorText = document.getElementById('colorText');
+    
+    colorPicker.addEventListener('input', function() {
+        colorText.value = this.value;
+    });
+    
+    colorText.addEventListener('input', function() {
+        if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+            colorPicker.value = this.value;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block title %}Clientes - Elektra{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-people me-2"></i>Clientes Registrados
+                </h4>
+                <a href="{% url 'clientes_agregar' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-person-plus me-2"></i>Nuevo Cliente
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Buscador -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" 
+                                   placeholder="Buscar cliente por nombre, email o teléfono..."
+                                   id="searchClientes">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-lg" id="tipoClienteFilter">
+                            <option value="">Todos los tipos</option>
+                            <option value="regular">Regular</option>
+                            <option value="premium">Premium</option>
+                            <option value="corporativo">Corporativo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabla de Clientes con Fotos GRANDES -->
+                <div class="table-responsive">
+                    <table class="table table-hover" id="clientesTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="td-imagen-grande">FOTO</th>
+                                <th>INFORMACIÓN</th>
+                                <th>CONTACTO</th>
+                                <th>TIPO</th>
+                                <th>FECHA REGISTRO</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in page_obj %}
+                            <tr class="align-middle">
+                                <!-- FOTO GRANDE -->
+                                <td class="td-imagen-grande">
+                                    <div class="contenedor-imagen">
+                                        {% if cliente.foto %}
+                                            <img src="{{ cliente.foto.url }}" 
+                                                 alt="{{ cliente.nombre }}"
+                                                 class="img-perfil-grande img-brillante"
+                                                 data-bs-toggle="tooltip" 
+                                                 data-bs-title="Ver foto completa">
+                                        {% else %}
+                                            <img src="/media/clientes/default_cliente.png" 
+                                                 alt="Sin foto"
+                                                 class="img-perfil-grande"
+                                                 style="opacity: 0.7;">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                
+                                <!-- Información Personal -->
+                                <td>
+                                    <h5 class="mb-1 text-primary">{{ cliente.nombre }}</h5>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        {{ cliente.direccion|truncatechars:50 }}
+                                    </p>
+                                    <small class="text-muted">
+                                        ID: <span class="badge bg-secondary">{{ cliente.id }}</span>
+                                    </small>
+                                </td>
+                                
+                                <!-- Contacto -->
+                                <td>
+                                    <p class="mb-1">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        <strong>{{ cliente.email }}</strong>
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="bi bi-telephone me-2"></i>
+                                        {{ cliente.telefono }}
+                                    </p>
+                                </td>
+                                
+                                <!-- Tipo de Cliente -->
+                                <td>
+                                    {% if cliente.tipo_cliente == 'premium' %}
+                                        <span class="badge bg-warning text-dark fs-6 p-2">
+                                            <i class="bi bi-star-fill me-1"></i>Premium
+                                        </span>
+                                    {% elif cliente.tipo_cliente == 'corporativo' %}
+                                        <span class="badge bg-info fs-6 p-2">
+                                            <i class="bi bi-building me-1"></i>Corporativo
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary fs-6 p-2">
+                                            <i class="bi bi-person me-1"></i>Regular
+                                        </span>
+                                    {% endif %}
+                                    
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            Compras: <span class="badge bg-dark">{{ cliente.venta_set.count }}</span>
+                                        </small>
+                                    </div>
+                                </td>
+                                
+                                <!-- Fecha -->
+                                <td>
+                                    <h6 class="mb-0">{{ cliente.fecha_registro|date:"d/m/Y" }}</h6>
+                                    <small class="text-muted">
+                                        {{ cliente.fecha_registro|date:"h:i A" }}
+                                    </small>
+                                </td>
+                                
+                                <!-- Acciones -->
+                                <td>
+                                    <div class="btn-group-vertical" role="group">
+                                        <a href="{% url 'clientes_actualizar' cliente.id %}" 
+                                           class="btn btn-outline-primary mb-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Editar cliente">
+                                            <i class="bi bi-pencil-square me-2"></i>Editar
+                                        </a>
+                                        
+                                        <a href="{% url 'clientes_borrar' cliente.id %}" 
+                                           class="btn btn-outline-danger"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Eliminar cliente"
+                                           onclick="return confirmarEliminacion('¿Eliminar cliente {{ cliente.nombre|escapejs }}?')">
+                                            <i class="bi bi-trash me-2"></i>Eliminar
+                                        </a>
+                                        
+                                        {% if cliente.foto %}
+                                        <a href="{{ cliente.foto.url }}" 
+                                           target="_blank"
+                                           class="btn btn-outline-info mt-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Ver foto completa">
+                                            <i class="bi bi-image me-2"></i>Ver Foto
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-people display-1 text-muted mb-3"></i>
+                                        <h3>No hay clientes registrados</h3>
+                                        <p class="text-muted mb-4">Comienza agregando tu primer cliente al sistema</p>
+                                        <a href="{% url 'clientes_agregar' %}" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-person-plus me-2"></i>Agregar Primer Cliente
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="icon text-primary">
+                <i class="bi bi-people"></i>
+            </div>
+            <h3>{{ total }}</h3>
+            <p class="text-muted mb-0">Total Clientes</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="icon text-warning">
+                <i class="bi bi-star-fill"></i>
+            </div>
+            <h3>{{ clientes_premium }}</h3>
+            <p class="text-muted mb-0">Clientes Premium</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="icon text-info">
+                <i class="bi bi-building"></i>
+            </div>
+            <h3>{{ clientes_corporativos }}</h3>
+            <p class="text-muted mb-0">Clientes Corporativos</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Filtrado de clientes
+    document.getElementById('searchClientes').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const tipoFilter = document.getElementById('tipoClienteFilter').value;
+        
+        const rows = document.querySelectorAll('#clientesTable tbody tr');
+        
+        rows.forEach(row => {
+            if (row.querySelector('.empty-state')) return;
+            
+            const nombre = row.querySelector('h5').textContent.toLowerCase();
+            const email = row.querySelector('td:nth-child(3) p:nth-child(1) strong').textContent.toLowerCase();
+            const telefono = row.querySelector('td:nth-child(3) p:nth-child(2)').textContent.toLowerCase();
+            const tipo = row.querySelector('td:nth-child(4) .badge').textContent.toLowerCase();
+            
+            let show = true;
+            
+            // Filtrar por búsqueda
+            if (searchTerm && !nombre.includes(searchTerm) && 
+                !email.includes(searchTerm) && !telefono.includes(searchTerm)) {
+                show = false;
+            }
+            
+            // Filtrar por tipo
+            if (tipoFilter && !tipo.includes(tipoFilter.toLowerCase())) {
+                show = false;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+    });
+    
+    document.getElementById('tipoClienteFilter').addEventListener('change', function() {
+        document.getElementById('searchClientes').dispatchEvent(new Event('input'));
+    });
+</script>
+{% endblock %}

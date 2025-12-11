@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Categoría - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle me-2"></i>Agregar Nueva Categoría
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-secondary">
+                                <i class="bi bi-tag-fill me-2"></i>Información de la Categoría
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre" required
+                                           placeholder="Ej: Electrónica, Ropa, Hogar...">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre de la categoría.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Color *</label>
+                                    <div class="input-group input-group-lg">
+                                        <input type="color" class="form-control form-control-color" 
+                                               name="color" value="#6c757d" 
+                                               style="width: 80px; height: 50px;">
+                                        <input type="text" class="form-control" 
+                                               id="colorText" value="#6c757d"
+                                               placeholder="#RRGGBB">
+                                    </div>
+                                    <small class="text-muted">
+                                        Formato HEX: #RRGGBB
+                                    </small>
+                                </div>
+                                
+                                <div class="col-12 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="mb-3">Colores Sugeridos:</h6>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #FF0000; width: 40px; height: 40px;"
+                                                        data-color="#FF0000" title="Rojo"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #00FF00; width: 40px; height: 40px;"
+                                                        data-color="#00FF00" title="Verde"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #0000FF; width: 40px; height: 40px;"
+                                                        data-color="#0000FF" title="Azul"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #FFFF00; width: 40px; height: 40px;"
+                                                        data-color="#FFFF00" title="Amarillo"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #FF00FF; width: 40px; height: 40px;"
+                                                        data-color="#FF00FF" title="Magenta"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #00FFFF; width: 40px; height: 40px;"
+                                                        data-color="#00FFFF" title="Cian"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #FFA500; width: 40px; height: 40px;"
+                                                        data-color="#FFA500" title="Naranja"></button>
+                                                <button type="button" class="btn color-option" 
+                                                        style="background-color: #800080; width: 40px; height: 40px;"
+                                                        data-color="#800080" title="Púrpura"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Icono GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-secondary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-image me-2"></i>Icono de la Categoría
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Vista previa EXTRA GRANDE -->
+                                    <div class="mb-4">
+                                        <img id="vista-previa-categoria" 
+                                             src="/media/categorias/default_categoria.png" 
+                                             alt="Vista previa del icono"
+                                             class="img-preview-extra-grande d-block mx-auto"
+                                             style="width: 250px; height: 250px; border-radius: 20px;">
+                                    </div>
+                                    
+                                    <!-- Campo para subir icono -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-secondary btn-lg w-100">
+                                            <i class="bi bi-upload me-2"></i>Subir Icono
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="icono" 
+                                                   name="icono" 
+                                                   accept="image/*"
+                                                   onchange="mostrarVistaPreviaGrande(this, 'vista-previa-categoria')">
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Información -->
+                                    <div class="alert alert-secondary">
+                                        <h6><i class="bi bi-info-circle me-2"></i>Recomendaciones:</h6>
+                                        <ul class="mb-0 ps-3">
+                                            <li>Tamaño: 500x500 px</li>
+                                            <li>Fondo transparente preferible</li>
+                                            <li>Formato: PNG con transparencia</li>
+                                            <li>Icono representativo</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Ejemplos de iconos -->
+                                    <div class="mt-4">
+                                        <h6 class="text-muted mb-3">Ejemplos de iconos:</h6>
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <div class="text-center">
+                                                    <i class="bi bi-phone display-6 text-primary"></i>
+                                                    <small class="d-block">Electrónica</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="text-center">
+                                                    <i class="bi bi-tshirt display-6 text-success"></i>
+                                                    <small class="d-block">Ropa</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="text-center">
+                                                    <i class="bi bi-house display-6 text-warning"></i>
+                                                    <small class="d-block">Hogar</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'categorias_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-save me-2"></i>Guardar Categoría
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sincronizar selector de color con campo de texto
+    const colorPicker = document.querySelector('input[name="color"]');
+    const colorText = document.getElementById('colorText');
+    
+    colorPicker.addEventListener('input', function() {
+        colorText.value = this.value;
+    });
+    
+    colorText.addEventListener('input', function() {
+        if (this.value.match(/^#[0-9A-F]{6}$/i)) {
+            colorPicker.value = this.value;
+        }
+    });
+    
+    // Selectores de color sugeridos
+    document.querySelectorAll('.color-option').forEach(button => {
+        button.addEventListener('click', function() {
+            const color = this.getAttribute('data-color');
+            colorPicker.value = color;
+            colorText.value = color;
+        });
+    });
+</script>
+{% endblock %}

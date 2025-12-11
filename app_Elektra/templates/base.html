@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema Elektra{% endblock %}</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --success-color: #4cc9f0;
+            --danger-color: #f72585;
+            --warning-color: #f8961e;
+            --info-color: #7209b7;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 60px;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: white !important;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        
+        .table th {
+            background-color: #e9ecef;
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+        }
+        
+        /* ==================== IMÁGENES GRANDES ==================== */
+        
+        /* Imágenes en listas - MUY GRANDES */
+        .img-lista-grande {
+            width: 150px;          /* ANCHO MUY GRANDE */
+            height: 150px;         /* ALTO MUY GRANDE */
+            object-fit: cover;     /* Mantiene proporción sin distorsión */
+            border-radius: 12px;   /* Esquinas redondeadas */
+            border: 4px solid #ffffff;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background-color: white;
+        }
+        
+        .img-lista-grande:hover {
+            transform: scale(1.1) rotate(2deg);
+            border-color: var(--primary-color);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.25);
+            z-index: 100;
+        }
+        
+        /* Productos - imágenes cuadradas grandes */
+        .img-producto-grande {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid #ffffff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        /* Perfiles - imágenes redondas grandes */
+        .img-perfil-grande {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #ffffff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        
+        .img-perfil-grande:hover {
+            transform: scale(1.1);
+            border-color: var(--success-color);
+        }
+        
+        /* Logos - cuadrados grandes */
+        .img-logo-grande {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;  /* Muestra logo completo sin recortar */
+            border-radius: 15px;
+            background: linear-gradient(135deg, #ffffff, #f8f9fa);
+            padding: 15px;
+            border: 4px solid #dee2e6;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Iconos - cuadrados grandes */
+        .img-icono-grande {
+            width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 4px solid #ffffff;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            background: white;
+        }
+        
+        /* Vista previa en formularios - EXTRA GRANDE */
+        .img-preview-extra-grande {
+            width: 250px;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 20px;
+            border: 5px dashed var(--primary-color);
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Contenedores para imágenes en tablas */
+        .td-imagen-grande {
+            width: 180px;      /* Espacio amplio para imagen grande */
+            text-align: center;
+            vertical-align: middle;
+            padding: 15px !important;
+        }
+        
+        .contenedor-imagen {
+            display: inline-block;
+            position: relative;
+            overflow: visible;
+        }
+        
+        /* Efecto de brillo en imágenes */
+        .img-brillante {
+            filter: brightness(1.05);
+        }
+        
+        .img-brillante:hover {
+            filter: brightness(1.15) saturate(1.2);
+        }
+        
+        /* Badges mejorados */
+        .badge {
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        /* Alertas */
+        .alert {
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px;
+        }
+        
+        /* Paginación */
+        .pagination .page-link {
+            color: var(--primary-color);
+            border-radius: 8px;
+            margin: 0 5px;
+            border: none;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-color: var(--primary-color);
+        }
+        
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            line-height: 60px;
+            text-align: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        
+        /* Tarjetas de estadísticas */
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+        
+        .stat-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Buscador */
+        .search-box {
+            max-width: 350px;
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 10px 20px;
+        }
+        
+        /* Tablas con efecto */
+        .table-hover tbody tr {
+            transition: all 0.3s;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: scale(1.01);
+        }
+        
+        /* Animaciones */
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animacion-aparecer {
+            animation: aparecer 0.5s ease-out;
+        }
+        
+        /* Scroll suave */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    
+    <div class="container mt-4 animacion-aparecer">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    <i class="bi bi-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    {% include 'footer.html' %}
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    
+    <script>
+        // Activar tooltips
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        });
+        
+        // Confirmación para eliminaciones
+        function confirmarEliminacion(mensaje) {
+            return confirm(mensaje || '¿Está seguro de eliminar este registro?');
+        }
+        
+        // Formato de moneda
+        function formatoMoneda(numero) {
+            return new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN'
+            }).format(numero);
+        }
+        
+        // Vista previa de imagen GRANDE
+        function mostrarVistaPreviaGrande(input, idVistaPrevia) {
+            const vistaPrevia = document.getElementById(idVistaPrevia);
+            const contenedor = vistaPrevia.parentElement;
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    vistaPrevia.src = e.target.result;
+                    vistaPrevia.classList.add('img-preview-extra-grande');
+                    vistaPrevia.classList.remove('d-none');
+                    contenedor.classList.add('text-center');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                vistaPrevia.classList.add('d-none');
+                vistaPrevia.classList.remove('img-preview-extra-grande');
+            }
+        }
+        
+        // Efecto hover en imágenes
+        document.addEventListener('DOMContentLoaded', function() {
+            const imagenes = document.querySelectorAll('.img-lista-grande, .img-producto-grande');
+            imagenes.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.zIndex = '1000';
+                });
+                img.addEventListener('mouseleave', function() {
+                    this.style.zIndex = '1';
+                });
+            });
+        });
+        
+        // Validación de formularios
+        function validarFormulario() {
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }
+        
+        // Inicializar validación
+        document.addEventListener('DOMContentLoaded', validarFormulario);
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

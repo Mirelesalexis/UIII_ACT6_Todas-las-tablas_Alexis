@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Categorías - Elektra{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-tags me-2"></i>Categorías de Productos
+                </h4>
+                <a href="{% url 'categorias_agregar' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg me-2"></i>Nueva Categoría
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Buscador -->
+                <div class="row mb-4">
+                    <div class="col-md-8">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-secondary text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" 
+                                   placeholder="Buscar categoría por nombre..."
+                                   id="searchCategorias">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select form-select-lg" id="colorFilter">
+                            <option value="">Todos los colores</option>
+                            <option value="#FF0000">Rojo</option>
+                            <option value="#00FF00">Verde</option>
+                            <option value="#0000FF">Azul</option>
+                            <option value="#FFFF00">Amarillo</option>
+                            <option value="#FF00FF">Magenta</option>
+                            <option value="#6c757d">Gris</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Grid de Categorías con Iconos GRANDES -->
+                <div class="row" id="categoriasGrid">
+                    {% for categoria in page_obj %}
+                    <div class="col-md-4 mb-4 categoria-item">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <!-- Icono GRANDE -->
+                                <div class="mb-4">
+                                    {% if categoria.icono %}
+                                        <img src="{{ categoria.icono.url }}" 
+                                             alt="{{ categoria.nombre }}"
+                                             class="img-icono-grande img-brillante"
+                                             style="border-color: {{ categoria.color }} !important;">
+                                    {% else %}
+                                        <div class="img-icono-grande d-flex align-items-center justify-content-center mx-auto"
+                                             style="border-color: {{ categoria.color }} !important; background-color: {{ categoria.color }}20;">
+                                            <i class="bi bi-tag-fill display-4" style="color: {{ categoria.color }};"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Información -->
+                                <h4 class="mb-2">{{ categoria.nombre }}</h4>
+                                
+                                <!-- Color -->
+                                <div class="mb-3">
+                                    <span class="badge fs-6 p-2" style="background-color: {{ categoria.color }}; color: white;">
+                                        <i class="bi bi-palette me-1"></i>{{ categoria.color }}
+                                    </span>
+                                </div>
+                                
+                                <!-- Productos -->
+                                <div class="mb-4">
+                                    <h2 class="display-6 text-primary">{{ categoria.productos.count }}</h2>
+                                    <p class="text-muted mb-0">productos</p>
+                                </div>
+                                
+                                <!-- Fecha -->
+                                <p class="text-muted mb-4">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    Creada: {{ categoria.fecha_creacion|date:"d/m/Y" }}
+                                </p>
+                                
+                                <!-- Acciones -->
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'categorias_actualizar' categoria.id %}" 
+                                       class="btn btn-outline-secondary">
+                                        <i class="bi bi-pencil me-2"></i>Editar
+                                    </a>
+                                    
+                                    <a href="{% url 'categorias_borrar' categoria.id %}" 
+                                       class="btn btn-outline-danger"
+                                       onclick="return confirmarEliminacion('¿Eliminar categoría {{ categoria.nombre|escapejs }}?')">
+                                        <i class="bi bi-trash me-2"></i>Eliminar
+                                    </a>
+                                    
+                                    {% if categoria.icono %}
+                                    <a href="{{ categoria.icono.url }}" 
+                                       target="_blank"
+                                       class="btn btn-outline-info">
+                                        <i class="bi bi-image me-2"></i>Ver Icono
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <div class="empty-state">
+                            <i class="bi bi-tags display-1 text-muted mb-3"></i>
+                            <h3>No hay categorías registradas</h3>
+                            <p class="text-muted mb-4">Comienza agregando tu primera categoría al sistema</p>
+                            <a href="{% url 'categorias_agregar' %}" class="btn btn-secondary btn-lg">
+                                <i class="bi bi-plus-circle me-2"></i>Agregar Primera Categoría
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Paginación - CORREGIDA -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .img-icono-grande {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 4px solid;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+    
+    .img-brillante {
+        filter: brightness(1.05) contrast(1.05);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .img-icono-grande:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    }
+    
+    .empty-state {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 4rem;
+    }
+</style>
+
+<script>
+    function confirmarEliminacion(mensaje) {
+        return confirm(mensaje);
+    }
+    
+    // Filtro de búsqueda
+    document.getElementById('searchCategorias').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const items = document.querySelectorAll('.categoria-item');
+        
+        items.forEach(item => {
+            const nombre = item.querySelector('h4').textContent.toLowerCase();
+            if (nombre.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    });
+    
+    // Filtro por color
+    document.getElementById('colorFilter').addEventListener('change', function() {
+        const selectedColor = this.value;
+        const items = document.querySelectorAll('.categoria-item');
+        
+        items.forEach(item => {
+            const colorBadge = item.querySelector('.badge');
+            if (colorBadge) {
+                const itemColor = colorBadge.style.backgroundColor;
+                
+                if (!selectedColor || itemColor === selectedColor) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

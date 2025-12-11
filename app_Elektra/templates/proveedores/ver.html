@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+
+{% block title %}Proveedores - Elektra{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-truck me-2"></i>Proveedores Registrados
+                </h4>
+                <a href="{% url 'proveedores_agregar' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg me-2"></i>Nuevo Proveedor
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Filtros -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-warning text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" class="form-control" 
+                                   placeholder="Buscar proveedor..."
+                                   id="searchProveedores">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-lg" id="estadoFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="activo">Activos</option>
+                            <option value="inactivo">Inactivos</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select form-select-lg" id="paisFilter">
+                            <option value="">Todos los países</option>
+                            {% for pais in paises %}
+                            <option value="{{ pais|lower }}">{{ pais }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tabla de Proveedores con Logos GRANDES -->
+                <div class="table-responsive">
+                    <table class="table table-hover" id="proveedoresTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="td-imagen-grande">LOGO</th>
+                                <th>INFORMACIÓN</th>
+                                <th>CONTACTO</th>
+                                <th>UBICACIÓN</th>
+                                <th>ESTADO</th>
+                                <th>PRODUCTOS</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for proveedor in page_obj %}
+                            <tr class="align-middle">
+                                <!-- LOGO GRANDE -->
+                                <td class="td-imagen-grande">
+                                    <div class="contenedor-imagen">
+                                        {% if proveedor.logo %}
+                                            <img src="{{ proveedor.logo.url }}" 
+                                                 alt="{{ proveedor.nombre }}"
+                                                 class="img-logo-grande img-brillante"
+                                                 data-bs-toggle="tooltip" 
+                                                 data-bs-title="Ver logo completo">
+                                        {% else %}
+                                            <img src="/media/proveedores/default_proveedor.png" 
+                                                 alt="Sin logo"
+                                                 class="img-logo-grande"
+                                                 style="opacity: 0.7;">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                
+                                <!-- Información -->
+                                <td>
+                                    <h5 class="mb-1 text-warning">{{ proveedor.nombre }}</h5>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-card-text me-1"></i>
+                                        {{ proveedor.direccion|truncatechars:50 }}
+                                    </p>
+                                    <small class="text-muted">
+                                        Registrado: {{ proveedor.fecha_registro|date:"d/m/Y" }}
+                                    </small>
+                                </td>
+                                
+                                <!-- Contacto -->
+                                <td>
+                                    <p class="mb-1">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        <strong>{{ proveedor.email }}</strong>
+                                    </p>
+                                    <p class="mb-0">
+                                        <i class="bi bi-telephone me-2"></i>
+                                        {{ proveedor.telefono }}
+                                    </p>
+                                </td>
+                                
+                                <!-- Ubicación -->
+                                <td>
+                                    <p class="mb-1">
+                                        <i class="bi bi-globe-americas me-2"></i>
+                                        <strong>{{ proveedor.pais }}</strong>
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt me-1"></i>
+                                        {{ proveedor.direccion|truncatechars:30 }}
+                                    </small>
+                                </td>
+                                
+                                <!-- Estado -->
+                                <td>
+                                    {% if proveedor.activo %}
+                                        <span class="badge bg-success fs-6 p-2">
+                                            <i class="bi bi-check-circle me-1"></i>Activo
+                                        </span>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                Desde: {{ proveedor.fecha_registro|date:"Y" }}
+                                            </small>
+                                        </div>
+                                    {% else %}
+                                        <span class="badge bg-danger fs-6 p-2">
+                                            <i class="bi bi-x-circle me-1"></i>Inactivo
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Productos -->
+                                <td>
+                                    <h4 class="text-center mb-1">{{ proveedor.productos.count }}</h4>
+                                    <small class="text-muted d-block text-center">
+                                        productos
+                                    </small>
+                                    {% if proveedor.productos.count > 0 %}
+                                    <div class="text-center mt-2">
+                                        <button class="btn btn-sm btn-outline-info" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#productosModal{{ proveedor.id }}">
+                                            <i class="bi bi-eye me-1"></i>Ver
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Acciones -->
+                                <td>
+                                    <div class="btn-group-vertical" role="group">
+                                        <a href="{% url 'proveedores_actualizar' proveedor.id %}" 
+                                           class="btn btn-outline-warning mb-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Editar proveedor">
+                                            <i class="bi bi-pencil-square me-2"></i>Editar
+                                        </a>
+                                        
+                                        <a href="{% url 'proveedores_borrar' proveedor.id %}" 
+                                           class="btn btn-outline-danger"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Eliminar proveedor"
+                                           onclick="return confirmarEliminacion('¿Eliminar proveedor {{ proveedor.nombre|escapejs }}?')">
+                                            <i class="bi bi-trash me-2"></i>Eliminar
+                                        </a>
+                                        
+                                        {% if proveedor.logo %}
+                                        <a href="{{ proveedor.logo.url }}" 
+                                           target="_blank"
+                                           class="btn btn-outline-primary mt-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Ver logo completo">
+                                            <i class="bi bi-image me-2"></i>Ver Logo
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-truck display-1 text-muted mb-3"></i>
+                                        <h3>No hay proveedores registrados</h3>
+                                        <p class="text-muted mb-4">Comienza agregando tu primer proveedor al sistema</p>
+                                        <a href="{% url 'proveedores_agregar' %}" class="btn btn-warning btn-lg">
+                                            <i class="bi bi-plus-circle me-2"></i>Agregar Primer Proveedor
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-warning">
+                <i class="bi bi-truck"></i>
+            </div>
+            <h3>{{ total }}</h3>
+            <p class="text-muted mb-0">Total Proveedores</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <h3>{{ activos }}</h3>
+            <p class="text-muted mb-0">Activos</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-danger">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <h3>{{ inactivos }}</h3>
+            <p class="text-muted mb-0">Inactivos</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-info">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h3>{{ total_productos }}</h3>
+            <p class="text-muted mb-0">Total Productos</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modales para ver productos de cada proveedor -->
+{% for proveedor in page_obj %}
+{% if proveedor.productos.count > 0 %}
+<div class="modal fade" id="productosModal{{ proveedor.id }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Productos de {{ proveedor.nombre }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    {% for producto in proveedor.productos.all|slice:":6" %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body text-center">
+                                {% if producto.imagen %}
+                                    <img src="{{ producto.imagen.url }}" 
+                                         alt="{{ producto.nombre_producto }}"
+                                         class="img-fluid rounded mb-2"
+                                         style="height: 80px; object-fit: cover;">
+                                {% endif %}
+                                <h6 class="mb-1">{{ producto.nombre_producto }}</h6>
+                                <p class="mb-1 text-success">${{ producto.precio }}</p>
+                                <span class="badge bg-{% if producto.stock > 10 %}success{% else %}warning{% endif %}">
+                                    Stock: {{ producto.stock }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if proveedor.productos.count > 6 %}
+                <div class="text-center mt-3">
+                    <p class="text-muted">
+                        Mostrando 6 de {{ proveedor.productos.count }} productos
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script>
+    // Filtrado de proveedores
+    function filtrarProveedores() {
+        const searchTerm = document.getElementById('searchProveedores').value.toLowerCase();
+        const estado = document.getElementById('estadoFilter').value;
+        const pais = document.getElementById('paisFilter').value.toLowerCase();
+        
+        const rows = document.querySelectorAll('#proveedoresTable tbody tr');
+        
+        rows.forEach(row => {
+            if (row.querySelector('.empty-state')) return;
+            
+            const nombre = row.querySelector('h5').textContent.toLowerCase();
+            const email = row.querySelector('td:nth-child(3) p:nth-child(1) strong').textContent.toLowerCase();
+            const paisRow = row.querySelector('td:nth-child(4) strong').textContent.toLowerCase();
+            const estadoRow = row.querySelector('td:nth-child(5) .badge').textContent.toLowerCase();
+            
+            let show = true;
+            
+            // Filtrar por búsqueda
+            if (searchTerm && !nombre.includes(searchTerm) && !email.includes(searchTerm)) {
+                show = false;
+            }
+            
+            // Filtrar por estado
+            if (estado === 'activo' && !estadoRow.includes('activo')) {
+                show = false;
+            } else if (estado === 'inactivo' && !estadoRow.includes('inactivo')) {
+                show = false;
+            }
+            
+            // Filtrar por país
+            if (pais && !paisRow.includes(pais)) {
+                show = false;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+    }
+    
+    document.getElementById('searchProveedores').addEventListener('input', filtrarProveedores);
+    document.getElementById('estadoFilter').addEventListener('change', filtrarProveedores);
+    document.getElementById('paisFilter').addEventListener('change', filtrarProveedores);
+</script>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Vendedor - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-plus me-2"></i>Agregar Nuevo Vendedor
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-info">
+                                <i class="bi bi-person-lines-fill me-2"></i>Información del Vendedor
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre Completo *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre" required
+                                           placeholder="Ej: Carlos Mendoza Ruiz">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre del vendedor.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Teléfono *</label>
+                                    <input type="tel" class="form-control form-control-lg" 
+                                           name="telefono" required
+                                           placeholder="Ej: 555-987-6543">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un teléfono válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Email *</label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           name="email" required
+                                           placeholder="Ej: vendedor@elektra.com">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un email válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Fecha de Contratación</label>
+                                    <input type="date" class="form-control form-control-lg" 
+                                           name="fecha_contratacion"
+                                           value="{{ fecha_hoy }}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Estado</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="activo" id="activo" checked
+                                               style="transform: scale(1.5);">
+                                        <label class="form-check-label fw-bold ms-3" for="activo">
+                                            Vendedor Activo
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">
+                                        Los vendedores activos pueden realizar ventas
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Foto GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-camera me-2"></i>Foto del Vendedor
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Vista previa EXTRA GRANDE -->
+                                    <div class="mb-4">
+                                        <img id="vista-previa-vendedor" 
+                                             src="/media/vendedores/default_vendedor.png" 
+                                             alt="Vista previa de la foto"
+                                             class="img-preview-extra-grande d-block mx-auto rounded-circle"
+                                             style="width: 250px; height: 250px; border-radius: 50% !important;">
+                                    </div>
+                                    
+                                    <!-- Campo para subir foto -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-info btn-lg w-100">
+                                            <i class="bi bi-camera-fill me-2"></i>Subir Foto
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="foto" 
+                                                   name="foto" 
+                                                   accept="image/*"
+                                                   onchange="mostrarVistaPreviaGrande(this, 'vista-previa-vendedor')">
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Información -->
+                                    <div class="alert alert-info">
+                                        <h6><i class="bi bi-lightbulb me-2"></i>Recomendaciones:</h6>
+                                        <ul class="mb-0 ps-3">
+                                            <li>Foto profesional del rostro</li>
+                                            <li>Fondo blanco preferible</li>
+                                            <li>Vista frontal</li>
+                                            <li>Formato: JPG o PNG</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Datos de identificación -->
+                                    <div class="mt-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6>Datos Generales:</h6>
+                                                <ul class="list-unstyled">
+                                                    <li><small><i class="bi bi-calendar me-1"></i>Fecha: {{ fecha_hoy }}</small></li>
+                                                    <li><small><i class="bi bi-person me-1"></i>Vendedor #{{ next_id }}</small></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'vendedores_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-info btn-lg">
+                            <i class="bi bi-person-check me-2"></i>Registrar Vendedor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Establecer fecha de hoy por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.querySelector('input[name="fecha_contratacion"]');
+        if (!fechaInput.value) {
+            const hoy = new Date().toISOString().split('T')[0];
+            fechaInput.value = hoy;
+        }
+    });
+</script>
+{% endblock %}

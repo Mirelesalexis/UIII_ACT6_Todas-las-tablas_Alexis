@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizar Proveedor - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Actualizar Proveedor: {{ proveedor.nombre }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-warning">
+                                <i class="bi bi-building me-2"></i>Información del Proveedor
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre" value="{{ proveedor.nombre }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre del proveedor.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">País *</label>
+                                    <select class="form-select form-select-lg" name="pais" required>
+                                        <option value="México" {% if proveedor.pais == 'México' %}selected{% endif %}>México</option>
+                                        <option value="Estados Unidos" {% if proveedor.pais == 'Estados Unidos' %}selected{% endif %}>Estados Unidos</option>
+                                        <option value="China" {% if proveedor.pais == 'China' %}selected{% endif %}>China</option>
+                                        <option value="Alemania" {% if proveedor.pais == 'Alemania' %}selected{% endif %}>Alemania</option>
+                                        <option value="Japón" {% if proveedor.pais == 'Japón' %}selected{% endif %}>Japón</option>
+                                        <option value="Corea del Sur" {% if proveedor.pais == 'Corea del Sur' %}selected{% endif %}>Corea del Sur</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona un país.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Teléfono *</label>
+                                    <input type="tel" class="form-control form-control-lg" 
+                                           name="telefono" value="{{ proveedor.telefono }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un teléfono válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Email *</label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           name="email" value="{{ proveedor.email }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un email válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mb-4">
+                                    <label class="form-label fw-bold">Dirección *</label>
+                                    <textarea class="form-control" name="direccion" 
+                                              rows="3" required>{{ proveedor.direccion }}</textarea>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa la dirección.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Estado</label>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="activo" id="activo" 
+                                               {% if proveedor.activo %}checked{% endif %}
+                                               style="transform: scale(1.5);">
+                                        <label class="form-check-label fw-bold ms-3" for="activo">
+                                            Proveedor Activo
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Estadísticas -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6>Estadísticas:</h6>
+                                            <p class="mb-1"><strong>Productos:</strong> {{ proveedor.productos.count }}</p>
+                                            <p class="mb-0"><strong>Registrado:</strong> {{ proveedor.fecha_registro|date:"d/m/Y" }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Logo GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-warning text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-image me-2"></i>Logo del Proveedor
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Logo actual GRANDE -->
+                                    <div class="mb-4">
+                                        {% if proveedor.logo %}
+                                            <img src="{{ proveedor.logo.url }}" 
+                                                 alt="Logo actual"
+                                                 class="img-preview-extra-grande d-block mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px solid #ffc107;">
+                                            <p class="text-warning mt-2">
+                                                <i class="bi bi-check-circle"></i> Logo actual
+                                            </p>
+                                        {% else %}
+                                            <img src="/media/proveedores/default_proveedor.png" 
+                                                 alt="Sin logo"
+                                                 class="img-preview-extra-grande d-block mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px dashed #dee2e6;">
+                                            <p class="text-muted mt-2">
+                                                <i class="bi bi-image"></i> Sin logo
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Campo para cambiar logo -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-warning btn-lg w-100">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Cambiar Logo
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="logo" 
+                                                   name="logo" 
+                                                   accept="image/*">
+                                        </label>
+                                        <small class="text-muted d-block mt-2">
+                                            Deja vacío para mantener el logo actual
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Información adicional -->
+                                    <div class="mt-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6>Información:</h6>
+                                                <ul class="list-unstyled">
+                                                    <li><small>ID: <strong>{{ proveedor.id }}</strong></small></li>
+                                                    <li><small>País: {{ proveedor.pais }}</small></li>
+                                                    <li><small>Email: {{ proveedor.email }}</small></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'proveedores_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-save me-2"></i>Actualizar Proveedor
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

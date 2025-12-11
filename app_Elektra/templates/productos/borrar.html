@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Producto - Sistema Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-trash text-danger" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">¿Está seguro de eliminar este producto?</h4>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h5><i class="bi bi-box me-2"></i>{{ producto.nombre_producto }}</h5>
+                    <p class="mb-1"><strong>SKU:</strong> {{ producto.sku }}</p>
+                    <p class="mb-1"><strong>Categoría:</strong> {{ producto.categoria.nombre }}</p>
+                    <p class="mb-1"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                    <p class="mb-1"><strong>Stock:</strong> {{ producto.stock }} unidades</p>
+                    <p class="mb-0"><strong>Proveedor:</strong> {{ producto.proveedor.nombre }}</p>
+                </div>
+                
+                {% if producto.venta_set.count > 0 %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-octagon me-2"></i>
+                    <strong>¡Advertencia!</strong> Este producto tiene {{ producto.venta_set.count }} venta(s) asociada(s). 
+                    No se puede eliminar hasta que elimine esas ventas.
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'productos_ver' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        {% if producto.venta_set.count == 0 %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Sí, eliminar producto
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-danger" disabled>
+                            <i class="bi bi-trash"></i> No se puede eliminar
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Venta - Sistema Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-cart-plus me-2"></i>Registrar Nueva Venta</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="alert alert-primary">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Folio de Venta:</strong> {{ folio }}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="vendedor" class="form-label">Vendedor *</label>
+                            <select class="form-select" id="vendedor" name="vendedor" required>
+                                <option value="">Seleccionar vendedor</option>
+                                {% for vendedor in vendedores %}
+                                <option value="{{ vendedor.id }}">{{ vendedor.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cliente" class="form-label">Cliente *</label>
+                            <select class="form-select" id="cliente" name="cliente" required>
+                                <option value="">Seleccionar cliente</option>
+                                {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}">{{ cliente.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="producto" class="form-label">Producto *</label>
+                            <select class="form-select" id="producto" name="producto" required 
+                                    onchange="actualizarPrecio()">
+                                <option value="">Seleccionar producto</option>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" 
+                                        data-precio="{{ producto.precio }}"
+                                        data-stock="{{ producto.stock }}">
+                                    {{ producto.nombre_producto }} - ${{ producto.precio }} (Stock: {{ producto.stock }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cantidad" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                                   required min="1" value="1" onchange="calcularTotal()">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="metodo_pago" class="form-label">Método de Pago *</label>
+                            <select class="form-select" id="metodo_pago" name="metodo_pago" required>
+                                <option value="">Seleccionar método</option>
+                                <option value="efectivo">Efectivo</option>
+                                <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                                <option value="tarjeta_debito">Tarjeta de Débito</option>
+                                <option value="transferencia">Transferencia</option>
+                                <option value="cheque">Cheque</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Información del Producto</label>
+                            <div class="alert alert-info" id="producto-info">
+                                <p class="mb-1" id="precio-unitario">Precio unitario: $0.00</p>
+                                <p class="mb-1" id="stock-disponible">Stock disponible: 0</p>
+                                <p class="mb-0" id="total-calculado">Total: $0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'ventas_ver' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Registrar Venta
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                <small>Los campos marcados con * son obligatorios. Verifique el stock antes de registrar la venta.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function actualizarPrecio() {
+        const productoSelect = document.getElementById('producto');
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const precio = selectedOption.getAttribute('data-precio') || '0';
+        const stock = selectedOption.getAttribute('data-stock') || '0';
+        
+        document.getElementById('precio-unitario').textContent = `Precio unitario: $${parseFloat(precio).toFixed(2)}`;
+        document.getElementById('stock-disponible').textContent = `Stock disponible: ${stock}`;
+        
+        // Actualizar cantidad máxima
+        const cantidadInput = document.getElementById('cantidad');
+        cantidadInput.max = stock;
+        
+        if (parseInt(cantidadInput.value) > parseInt(stock)) {
+            cantidadInput.value = stock;
+        }
+        
+        calcularTotal();
+    }
+    
+    function calcularTotal() {
+        const productoSelect = document.getElementById('producto');
+        const selectedOption = productoSelect.options[productoSelect.selectedIndex];
+        const precio = parseFloat(selectedOption.getAttribute('data-precio')) || 0;
+        const cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+        const total = precio * cantidad;
+        
+        document.getElementById('total-calculado').textContent = `Total: $${total.toFixed(2)}`;
+    }
+    
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+        actualizarPrecio();
+        calcularTotal();
+    });
+</script>
+{% endblock %}

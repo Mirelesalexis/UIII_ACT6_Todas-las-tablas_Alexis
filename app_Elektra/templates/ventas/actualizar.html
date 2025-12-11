@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Venta - Sistema Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-pencil me-2"></i>Editar Venta</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="folio" class="form-label">Folio *</label>
+                            <input type="text" class="form-control" id="folio" name="folio" 
+                                   value="{{ venta.folio }}" required maxlength="50">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="estado" class="form-label">Estado *</label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="completada" {% if venta.estado == 'completada' %}selected{% endif %}>Completada</option>
+                                <option value="pendiente" {% if venta.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                                <option value="cancelada" {% if venta.estado == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="vendedor" class="form-label">Vendedor *</label>
+                            <select class="form-select" id="vendedor" name="vendedor" required>
+                                <option value="">Seleccionar vendedor</option>
+                                {% for vendedor in vendedores %}
+                                <option value="{{ vendedor.id }}" 
+                                        {% if venta.vendedor.id == vendedor.id %}selected{% endif %}>
+                                    {{ vendedor.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="cliente" class="form-label">Cliente *</label>
+                            <select class="form-select" id="cliente" name="cliente" required>
+                                <option value="">Seleccionar cliente</option>
+                                {% for cliente in clientes %}
+                                <option value="{{ cliente.id }}" 
+                                        {% if venta.cliente.id == cliente.id %}selected{% endif %}>
+                                    {{ cliente.nombre }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="producto" class="form-label">Producto *</label>
+                            <select class="form-select" id="producto" name="producto" required>
+                                <option value="">Seleccionar producto</option>
+                                {% for producto in productos %}
+                                <option value="{{ producto.id }}" 
+                                        {% if venta.producto.id == producto.id %}selected{% endif %}>
+                                    {{ producto.nombre_producto }} - ${{ producto.precio }} (Stock: {{ producto.stock }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="cantidad" class="form-label">Cantidad *</label>
+                            <input type="number" class="form-control" id="cantidad" name="cantidad" 
+                                   value="1" required min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="metodo_pago" class="form-label">Método de Pago *</label>
+                            <select class="form-select" id="metodo_pago" name="metodo_pago" required>
+                                <option value="">Seleccionar método</option>
+                                <option value="efectivo" {% if venta.metodo_pago == 'efectivo' %}selected{% endif %}>Efectivo</option>
+                                <option value="tarjeta_credito" {% if venta.metodo_pago == 'tarjeta_credito' %}selected{% endif %}>Tarjeta de Crédito</option>
+                                <option value="tarjeta_debito" {% if venta.metodo_pago == 'tarjeta_debito' %}selected{% endif %}>Tarjeta de Débito</option>
+                                <option value="transferencia" {% if venta.metodo_pago == 'transferencia' %}selected{% endif %}>Transferencia</option>
+                                <option value="cheque" {% if venta.metodo_pago == 'cheque' %}selected{% endif %}>Cheque</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="total" class="form-label">Total *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" id="total" name="total" 
+                                       value="{{ venta.total }}" required step="0.01" min="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Fecha de registro:</strong> {{ venta.fecha_venta|date:"d/m/Y H:i" }}
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'ventas_ver' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Actualizar Venta
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

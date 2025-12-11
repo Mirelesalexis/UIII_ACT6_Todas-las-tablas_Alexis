@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ producto.nombre_producto }} - Imagen - Sistema Elektra{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Imagen grande -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-image"></i> {{ producto.nombre_producto }}
+                        <small class="float-end">{{ producto.sku }}</small>
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    {% if producto.imagen %}
+                    <div class="position-relative">
+                        <img src="{{ producto.imagen.url }}" 
+                             alt="{{ producto.nombre_producto }}"
+                             class="img-fluid rounded shadow-lg"
+                             style="max-height: 70vh; width: auto;"
+                             id="imagenPrincipal">
+                        
+                        <!-- Controles de zoom -->
+                        <div class="position-absolute bottom-0 end-0 m-3">
+                            <div class="btn-group shadow">
+                                <button class="btn btn-light" onclick="zoomIn()">
+                                    <i class="bi bi-zoom-in"></i>
+                                </button>
+                                <button class="btn btn-light" onclick="zoomOut()">
+                                    <i class="bi bi-zoom-out"></i>
+                                </button>
+                                <button class="btn btn-light" onclick="resetZoom()">
+                                    <i class="bi bi-fullscreen-exit"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <a href="{{ producto.imagen.url }}" download class="btn btn-success">
+                            <i class="bi bi-download"></i> Descargar imagen
+                        </a>
+                        <button onclick="window.print()" class="btn btn-info">
+                            <i class="bi bi-printer"></i> Imprimir
+                        </button>
+                        <a href="{% url 'productos_ver' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-image text-muted" style="font-size: 8rem;"></i>
+                        <h4 class="text-muted mt-4">Este producto no tiene imagen</h4>
+                        <a href="{% url 'productos_actualizar' producto.id %}" class="btn btn-primary mt-3">
+                            <i class="bi bi-upload"></i> Subir imagen
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información del producto -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-info-circle"></i> Información del producto</h5>
+                </div>
+                <div class="card-body">
+                    <h6>{{ producto.nombre_producto }}</h6>
+                    <p class="text-muted">{{ producto.descripcion|truncatechars:150 }}</p>
+                    
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>SKU:</strong></td>
+                            <td><code>{{ producto.sku }}</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Precio:</strong></td>
+                            <td class="text-success fw-bold">${{ producto.precio }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stock:</strong></td>
+                            <td>
+                                {% if producto.stock == 0 %}
+                                <span class="badge bg-danger">{{ producto.stock }}</span>
+                                {% elif producto.stock < 10 %}
+                                <span class="badge bg-warning">{{ producto.stock }}</span>
+                                {% else %}
+                                <span class="badge bg-success">{{ producto.stock }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Categoría:</strong></td>
+                            <td>{{ producto.categoria.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Proveedor:</strong></td>
+                            <td>{{ producto.proveedor.nombre }}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'productos_actualizar' producto.id %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar producto
+                        </a>
+                        <a href="{% url 'ventas_agregar' %}?producto={{ producto.id }}" class="btn btn-success">
+                            <i class="bi bi-cart-plus"></i> Vender este producto
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Metadatos de la imagen -->
+            {% if producto.imagen %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6><i class="bi bi-card-image"></i> Metadatos de la imagen</h6>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>URL:</strong> <small>{{ producto.imagen.url }}</small></p>
+                    <p class="mb-1"><strong>Nombre:</strong> {{ producto.imagen.name }}</p>
+                    <p class="mb-0"><strong>Tamaño:</strong> {{ producto.imagen.size|filesizeformat }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    let escala = 1;
+    const imagen = document.getElementById('imagenPrincipal');
+    
+    function zoomIn() {
+        escala = Math.min(3, escala + 0.1);
+        imagen.style.transform = `scale(${escala})`;
+        imagen.style.transition = 'transform 0.3s ease';
+    }
+    
+    function zoomOut() {
+        escala = Math.max(0.5, escala - 0.1);
+        imagen.style.transform = `scale(${escala})`;
+        imagen.style.transition = 'transform 0.3s ease';
+    }
+    
+    function resetZoom() {
+        escala = 1;
+        imagen.style.transform = 'scale(1)';
+        imagen.style.transition = 'transform 0.3s ease';
+    }
+    
+    // Zoom con rueda del mouse
+    imagen.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            zoomIn();
+        } else {
+            zoomOut();
+        }
+    });
+</script>
+{% endblock %}

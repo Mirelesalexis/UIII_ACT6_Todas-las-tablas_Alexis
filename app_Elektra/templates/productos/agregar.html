@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Producto - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle me-2"></i>Agregar Nuevo Producto
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-primary">
+                                <i class="bi bi-info-circle me-2"></i>Información del Producto
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre del Producto *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre_producto" required
+                                           placeholder="Ej: Televisor LED 55''">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre del producto.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">SKU (Código único) *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="sku" required
+                                           placeholder="Ej: TV-LED-55-2024">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el SKU del producto.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Categoría *</label>
+                                    <select class="form-select form-select-lg" name="categoria" required>
+                                        <option value="">Seleccione una categoría</option>
+                                        {% for categoria in categorias %}
+                                        <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona una categoría.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Proveedor *</label>
+                                    <select class="form-select form-select-lg" name="proveedor" required>
+                                        <option value="">Seleccione un proveedor</option>
+                                        {% for proveedor in proveedores %}
+                                        <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Por favor selecciona un proveedor.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Precio *</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text bg-primary text-white">$</span>
+                                        <input type="number" step="0.01" class="form-control" 
+                                               name="precio" required min="0">
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un precio válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Stock *</label>
+                                    <input type="number" class="form-control form-control-lg" 
+                                           name="stock" required min="0"
+                                           placeholder="Cantidad disponible">
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa la cantidad en stock.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mb-4">
+                                    <label class="form-label fw-bold">Descripción</label>
+                                    <textarea class="form-control" name="descripcion" 
+                                              rows="5" placeholder="Describe el producto..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Imagen GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-image me-2"></i>Imagen del Producto
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Vista previa EXTRA GRANDE -->
+                                    <div class="mb-4">
+                                        <img id="vista-previa-producto" 
+                                             src="/media/productos/default_producto.png" 
+                                             alt="Vista previa de la imagen"
+                                             class="img-preview-extra-grande d-block mx-auto">
+                                    </div>
+                                    
+                                    <!-- Campo para subir imagen -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-primary btn-lg w-100">
+                                            <i class="bi bi-upload me-2"></i>Seleccionar Imagen
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="imagen" 
+                                                   name="imagen" 
+                                                   accept="image/*"
+                                                   onchange="mostrarVistaPreviaGrande(this, 'vista-previa-producto')">
+                                        </label>
+                                    </div>
+                                    
+                                    <!-- Información -->
+                                    <div class="alert alert-info">
+                                        <h6><i class="bi bi-info-circle me-2"></i>Recomendaciones:</h6>
+                                        <ul class="mb-0 ps-3">
+                                            <li>Tamaño recomendado: 800x800 px</li>
+                                            <li>Formatos: JPG, PNG, GIF</li>
+                                            <li>Peso máximo: 5MB</li>
+                                            <li>Fondo blanco recomendado</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <!-- Ejemplos -->
+                                    <div class="mt-4">
+                                        <h6 class="text-muted mb-3">Ejemplos de buenas imágenes:</h6>
+                                        <div class="row g-2">
+                                            <div class="col-6">
+                                                <img src="https://via.placeholder.com/100x100/4361ee/ffffff?text=Producto" 
+                                                     class="img-fluid rounded" alt="Ejemplo">
+                                            </div>
+                                            <div class="col-6">
+                                                <img src="https://via.placeholder.com/100x100/3a0ca3/ffffff?text=Imagen" 
+                                                     class="img-fluid rounded" alt="Ejemplo">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'productos_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save me-2"></i>Guardar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

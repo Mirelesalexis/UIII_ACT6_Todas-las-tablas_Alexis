@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Vendedor - Sistema Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4><i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación</h4>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="bi bi-trash text-danger" style="font-size: 4rem;"></i>
+                    <h4 class="mt-3">¿Está seguro de eliminar este vendedor?</h4>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <h5><i class="bi bi-person-badge me-2"></i>{{ vendedor.nombre }}</h5>
+                    <p class="mb-1"><strong>Email:</strong> {{ vendedor.email }}</p>
+                    <p class="mb-1"><strong>Teléfono:</strong> {{ vendedor.telefono }}</p>
+                    <p class="mb-0"><strong>Ventas asociadas:</strong> {{ vendedor.venta_set.count }}</p>
+                </div>
+                
+                {% if vendedor.venta_set.count > 0 %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-octagon me-2"></i>
+                    <strong>¡Advertencia!</strong> Este vendedor tiene {{ vendedor.venta_set.count }} venta(s) asociada(s). 
+                    No se puede eliminar hasta que reasigne o elimine esas ventas.
+                </div>
+                {% endif %}
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <a href="{% url 'vendedores_ver' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        {% if vendedor.venta_set.count == 0 %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Sí, eliminar vendedor
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-danger" disabled>
+                            <i class="bi bi-trash"></i> No se puede eliminar
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos - Elektra{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="bi bi-box-seam me-2"></i>Productos Registrados
+                </h4>
+                <a href="{% url 'productos_agregar' %}" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg me-2"></i>Nuevo Producto
+                </a>
+            </div>
+            <div class="card-body">
+                <!-- Filtros -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control search-box" 
+                               placeholder="🔍 Buscar producto..." 
+                               id="searchInput">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="categoriaFilter">
+                            <option value="">Todas las categorías</option>
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.nombre|lower }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="stockFilter">
+                            <option value="">Todo el stock</option>
+                            <option value="suficiente">Stock suficiente (≥10)</option>
+                            <option value="bajo">Stock bajo (<10)</option>
+                            <option value="sin">Sin stock</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-outline-primary w-100" onclick="filtrarTabla()">
+                            <i class="bi bi-funnel me-2"></i>Filtrar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Tabla de productos con imágenes GRANDES -->
+                <div class="table-responsive">
+                    <table class="table table-hover" id="productosTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="td-imagen-grande">IMAGEN</th>
+                                <th>PRODUCTO</th>
+                                <th>CATEGORÍA</th>
+                                <th>PRECIO</th>
+                                <th>STOCK</th>
+                                <th>PROVEEDOR</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in page_obj %}
+                            <tr class="align-middle">
+                                <!-- IMAGEN GRANDE -->
+                                <td class="td-imagen-grande">
+                                    <div class="contenedor-imagen">
+                                        {% if producto.imagen %}
+                                            <img src="{{ producto.imagen.url }}" 
+                                                 alt="{{ producto.nombre_producto }}"
+                                                 class="img-lista-grande img-brillante"
+                                                 data-bs-toggle="tooltip" 
+                                                 data-bs-title="Ver imagen completa">
+                                        {% else %}
+                                            <img src="/media/productos/default_producto.png" 
+                                                 alt="Imagen predeterminada"
+                                                 class="img-lista-grande"
+                                                 style="opacity: 0.7;">
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                
+                                <!-- Información del producto -->
+                                <td>
+                                    <h5 class="mb-1">{{ producto.nombre_producto }}</h5>
+                                    <p class="text-muted mb-1">
+                                        <small>SKU: <span class="badge bg-secondary">{{ producto.sku }}</span></small>
+                                    </p>
+                                    {% if producto.descripcion %}
+                                    <p class="mb-0">
+                                        <small>{{ producto.descripcion|truncatechars:80 }}</small>
+                                    </p>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Categoría con icono GRANDE -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if producto.categoria.icono %}
+                                            <img src="{{ producto.categoria.icono.url }}" 
+                                                 alt="{{ producto.categoria.nombre }}"
+                                                 class="img-icono-grande me-3">
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ producto.categoria.nombre }}</strong>
+                                            <div class="mt-1">
+                                                <span class="badge" style="background-color: {{ producto.categoria.color }}; color: white;">
+                                                    {{ producto.categoria.color }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <!-- Precio -->
+                                <td>
+                                    <h4 class="text-success fw-bold">${{ producto.precio }}</h4>
+                                </td>
+                                
+                                <!-- Stock -->
+                                <td>
+                                    {% if producto.stock == 0 %}
+                                        <span class="badge bg-danger fs-6 p-2">
+                                            <i class="bi bi-x-circle me-1"></i>Agotado
+                                        </span>
+                                    {% elif producto.stock < 10 %}
+                                        <span class="badge bg-warning text-dark fs-6 p-2">
+                                            <i class="bi bi-exclamation-triangle me-1"></i>{{ producto.stock }} unidades
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success fs-6 p-2">
+                                            <i class="bi bi-check-circle me-1"></i>{{ producto.stock }} unidades
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Proveedor con logo GRANDE -->
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if producto.proveedor.logo %}
+                                            <img src="{{ producto.proveedor.logo.url }}" 
+                                                 alt="{{ producto.proveedor.nombre }}"
+                                                 class="img-logo-grande me-3">
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ producto.proveedor.nombre }}</strong>
+                                            <p class="mb-0 text-muted">
+                                                <small>{{ producto.proveedor.pais }}</small>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <!-- Acciones -->
+                                <td>
+                                    <div class="btn-group-vertical" role="group">
+                                        <a href="{% url 'productos_actualizar' producto.id %}" 
+                                           class="btn btn-outline-primary mb-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Editar producto">
+                                            <i class="bi bi-pencil-square me-2"></i>Editar
+                                        </a>
+                                        
+                                        <a href="{% url 'productos_borrar' producto.id %}" 
+                                           class="btn btn-outline-danger mb-2"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Eliminar producto"
+                                           onclick="return confirmarEliminacion('¿Eliminar producto {{ producto.nombre_producto|escapejs }}?')">
+                                            <i class="bi bi-trash me-2"></i>Eliminar
+                                        </a>
+                                        
+                                        {% if producto.imagen %}
+                                        <a href="{{ producto.imagen.url }}" 
+                                           target="_blank"
+                                           class="btn btn-outline-info"
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-title="Ver imagen en tamaño completo">
+                                            <i class="bi bi-zoom-in me-2"></i>Ver Imagen
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="bi bi-box-seam display-1 text-muted mb-3"></i>
+                                        <h3>No hay productos registrados</h3>
+                                        <p class="text-muted mb-4">Comienza agregando tu primer producto al sistema</p>
+                                        <a href="{% url 'productos_agregar' %}" class="btn btn-primary btn-lg">
+                                            <i class="bi bi-plus-circle me-2"></i>Agregar Primer Producto
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i> Anterior
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ num }}</span>
+                            </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                Siguiente <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-primary">
+                <i class="bi bi-box-seam"></i>
+            </div>
+            <h3>{{ total }}</h3>
+            <p class="text-muted mb-0">Total Productos</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-success">
+                <i class="bi bi-check-circle"></i>
+            </div>
+            <h3>{{ productos_suficiente }}</h3>
+            <p class="text-muted mb-0">Stock Suficiente</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <h3>{{ productos_bajo }}</h3>
+            <p class="text-muted mb-0">Stock Bajo</p>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <div class="icon text-danger">
+                <i class="bi bi-x-circle"></i>
+            </div>
+            <h3>{{ productos_sin }}</h3>
+            <p class="text-muted mb-0">Sin Stock</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Filtrado de tabla
+    function filtrarTabla() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const categoria = document.getElementById('categoriaFilter').value.toLowerCase();
+        const stock = document.getElementById('stockFilter').value;
+        
+        const rows = document.querySelectorAll('#productosTable tbody tr');
+        
+        rows.forEach(row => {
+            if (row.querySelector('.empty-state')) return;
+            
+            const nombre = row.querySelector('h5').textContent.toLowerCase();
+            const categoriaRow = row.querySelector('td:nth-child(3) strong').textContent.toLowerCase();
+            const stockText = row.querySelector('td:nth-child(5) .badge').textContent.toLowerCase();
+            
+            let show = true;
+            
+            // Filtrar por búsqueda
+            if (searchTerm && !nombre.includes(searchTerm)) {
+                show = false;
+            }
+            
+            // Filtrar por categoría
+            if (categoria && !categoriaRow.includes(categoria)) {
+                show = false;
+            }
+            
+            // Filtrar por stock
+            if (stock === 'suficiente' && stockText.includes('agotado' || stockText.includes('bajo'))) {
+                show = false;
+            } else if (stock === 'bajo' && !stockText.includes('unidades') || stockText.includes('agotado')) {
+                show = false;
+            } else if (stock === 'sin' && !stockText.includes('agotado')) {
+                show = false;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+    }
+    
+    // Búsqueda en tiempo real
+    document.getElementById('searchInput').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            filtrarTabla();
+        }
+    });
+</script>
+{% endblock %}

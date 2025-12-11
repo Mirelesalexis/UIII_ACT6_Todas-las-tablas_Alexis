@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Cliente - Elektra{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Eliminación
+                </h4>
+            </div>
+            <div class="card-body text-center">
+                <!-- Foto del cliente GRANDE -->
+                <div class="mb-4">
+                    {% if cliente.foto %}
+                        <img src="{{ cliente.foto.url }}" 
+                             alt="{{ cliente.nombre }}"
+                             class="img-perfil-grande border border-danger"
+                             style="border-width: 5px !important;">
+                    {% else %}
+                        <img src="/media/clientes/default_cliente.png" 
+                             alt="Sin foto"
+                             class="img-perfil-grande border border-danger"
+                             style="border-width: 5px !important; opacity: 0.6;">
+                    {% endif %}
+                </div>
+                
+                <!-- Mensaje de confirmación -->
+                <h2 class="text-danger mb-3">¿Eliminar Cliente?</h2>
+                <h4 class="mb-3">{{ cliente.nombre }}</h4>
+                
+                <div class="alert alert-warning mb-4">
+                    <h5><i class="bi bi-exclamation-circle me-2"></i>Advertencia</h5>
+                    <p class="mb-0">
+                        Esta acción eliminará permanentemente al cliente 
+                        <strong>{{ cliente.nombre }}</strong> y toda su información asociada.
+                        <br>
+                        <span class="text-danger fw-bold">
+                            Esta acción no se puede deshacer.
+                        </span>
+                    </p>
+                </div>
+                
+                <!-- Información del cliente -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Información</h6>
+                                <p class="mb-1"><strong>Email:</strong> {{ cliente.email }}</p>
+                                <p class="mb-1"><strong>Teléfono:</strong> {{ cliente.telefono }}</p>
+                                <p class="mb-0"><strong>Tipo:</strong> 
+                                    {% if cliente.tipo_cliente == 'premium' %}
+                                        <span class="badge bg-warning text-dark">Premium</span>
+                                    {% elif cliente.tipo_cliente == 'corporativo' %}
+                                        <span class="badge bg-info">Corporativo</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Regular</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Estadísticas</h6>
+                                <p class="mb-1"><strong>Registrado:</strong> {{ cliente.fecha_registro|date:"d/m/Y" }}</p>
+                                <p class="mb-1"><strong>Compras realizadas:</strong> {{ ventas_count }}</p>
+                                <p class="mb-0"><strong>Total gastado:</strong> ${{ total_gastado|default:"0.00" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botones -->
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'clientes_ver' %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-lg">
+                            <i class="bi bi-trash me-2"></i>Confirmar Eliminación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Actualizar Cliente - Elektra{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>Actualizar Cliente: {{ cliente.nombre }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda - Datos -->
+                        <div class="col-md-8">
+                            <h5 class="mb-4 text-primary">
+                                <i class="bi bi-person-lines-fill me-2"></i>Información del Cliente
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Nombre Completo *</label>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="nombre" value="{{ cliente.nombre }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa el nombre del cliente.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Teléfono *</label>
+                                    <input type="tel" class="form-control form-control-lg" 
+                                           name="telefono" value="{{ cliente.telefono }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un teléfono válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Email *</label>
+                                    <input type="email" class="form-control form-control-lg" 
+                                           name="email" value="{{ cliente.email }}" required>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un email válido.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label class="form-label fw-bold">Tipo de Cliente</label>
+                                    <select class="form-select form-select-lg" name="tipo_cliente">
+                                        <option value="regular" {% if cliente.tipo_cliente == 'regular' %}selected{% endif %}>Regular</option>
+                                        <option value="premium" {% if cliente.tipo_cliente == 'premium' %}selected{% endif %}>Premium</option>
+                                        <option value="corporativo" {% if cliente.tipo_cliente == 'corporativo' %}selected{% endif %}>Corporativo</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="col-12 mb-4">
+                                    <label class="form-label fw-bold">Dirección</label>
+                                    <textarea class="form-control" name="direccion" 
+                                              rows="4">{{ cliente.direccion }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Columna Derecha - Foto GRANDE -->
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">
+                                        <i class="bi bi-camera me-2"></i>Foto del Cliente
+                                    </h5>
+                                </div>
+                                <div class="card-body text-center">
+                                    <!-- Foto actual GRANDE -->
+                                    <div class="mb-4">
+                                        {% if cliente.foto %}
+                                            <img src="{{ cliente.foto.url }}" 
+                                                 alt="Foto actual"
+                                                 class="img-preview-extra-grande rounded-circle d-block mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px solid #198754;">
+                                            <p class="text-success mt-2">
+                                                <i class="bi bi-check-circle"></i> Foto actual
+                                            </p>
+                                        {% else %}
+                                            <img src="/media/clientes/default_cliente.png" 
+                                                 alt="Sin foto"
+                                                 class="img-preview-extra-grande rounded-circle d-block mx-auto"
+                                                 style="width: 250px; height: 250px; border: 5px dashed #dee2e6;">
+                                            <p class="text-muted mt-2">
+                                                <i class="bi bi-image"></i> Sin foto
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Campo para cambiar foto -->
+                                    <div class="mb-3">
+                                        <label class="btn btn-outline-success btn-lg w-100">
+                                            <i class="bi bi-arrow-repeat me-2"></i>Cambiar Foto
+                                            <input type="file" 
+                                                   class="d-none" 
+                                                   id="foto" 
+                                                   name="foto" 
+                                                   accept="image/*">
+                                        </label>
+                                        <small class="text-muted d-block mt-2">
+                                            Deja vacío para mantener la foto actual
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Información adicional -->
+                                    <div class="mt-4">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h6>Información del Registro:</h6>
+                                                <ul class="list-unstyled">
+                                                    <li><small>ID: <strong>{{ cliente.id }}</strong></small></li>
+                                                    <li><small>Registrado: {{ cliente.fecha_registro|date:"d/m/Y" }}</small></li>
+                                                    <li><small>Ventas: {{ cliente.venta_set.count }}</small></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between mt-5 pt-4 border-top">
+                        <a href="{% url 'clientes_ver' %}" class="btn btn-outline-secondary btn-lg">
+                            <i class="bi bi-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-save me-2"></i>Actualizar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

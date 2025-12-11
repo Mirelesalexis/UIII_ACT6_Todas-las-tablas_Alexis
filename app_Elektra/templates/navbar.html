@@ -1,0 +1,102 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <!-- CORREGIDO: 'inicio' por 'inicio_elektra' -->
+        <a class="navbar-brand fw-bold" href="{% url 'inicio_elektra' %}">
+            <i class="bi bi-shop-window me-2"></i>ELEKTRA STORE
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-box-seam me-1"></i>Productos
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'productos_ver' %}">Ver Productos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'productos_agregar' %}">Agregar Producto</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-people me-1"></i>Clientes
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'clientes_ver' %}">Ver Clientes</a></li>
+                        <li><a class="dropdown-item" href="{% url 'clientes_agregar' %}">Agregar Cliente</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-truck me-1"></i>Proveedores
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'proveedores_ver' %}">Ver Proveedores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'proveedores_agregar' %}">Agregar Proveedor</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-badge me-1"></i>Vendedores
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'vendedores_ver' %}">Ver Vendedores</a></li>
+                        <li><a class="dropdown-item" href="{% url 'vendedores_agregar' %}">Agregar Vendedor</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'ventas_ver' %}">
+                        <i class="bi bi-cash-coin me-1"></i>Ventas
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'categorias_ver' %}">
+                        <i class="bi bi-tags me-1"></i>Categorías
+                    </a>
+                </li>
+                
+                <!-- Puedes agregar también un enlace directo a Reportes si lo necesitas -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'reportes_ventas' %}">
+                        <i class="bi bi-graph-up me-1"></i>Reportes
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="navbar-text">
+                <span class="text-white">
+                    <i class="bi bi-calendar-date me-1"></i>
+                    <span id="fecha-hora"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    function actualizarFechaHora() {
+        const ahora = new Date();
+        const opciones = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        };
+        document.getElementById('fecha-hora').textContent = 
+            ahora.toLocaleDateString('es-MX', opciones);
+    }
+    
+    actualizarFechaHora();
+    setInterval(actualizarFechaHora, 1000);
+</script>
